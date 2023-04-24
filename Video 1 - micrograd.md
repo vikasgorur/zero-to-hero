@@ -68,5 +68,39 @@ end
 
 ### Backpropagation
 
+In a neural network, the end result of the value graph (root node) is the loss function $L$. The leaf nodes are the inputs that cannot change. Every value node in-between contains **weights** that can be updated during training.
+
+We can compute the gradient at every intermediate node by working backwards from $L$. First, we can calculate the gradient of nodes that $L$ depends on directly by numeric differentiation (function `dx()`). Then, the gradient at every node before that can be computed using the chain rule.
+
+The chain rule:
+
+> "If a car travels twice as fast as a bicycle and the bicycle is four times as fast as a walking man, then the car travels 2 × 4 = 8 times as fast as the man.”
+>
+> – George F. Simmons
+
+$$\frac{dz}{dx} = \frac{dz}{dy} \frac{dy}{dx}$$
+
+### Perceptron
+
+The simplest “neuron” has many inputs (a vector) $\textbf{x}$  and weights $\textbf{w}$. These are multiplied together and a bias is added, then filtered through an activation function like `tanh`.
+
+$$tanh(\textbf{w} \cdot \textbf{x} + b)$$
+
+### Going backwards
+
+Each op on a value node also should define a `backward` function that propagates the gradient to its children. For example the node for `a * b` defines the backwards function as:
+
+```julia
+function _backward()
+		a.grad = b.data * out.grad
+		b.grad = a.data * out.grad
+end
+
+```
+
+Here `out` is the new value node that represents `a * b`.
+
+To compute the gradient for every node, we need to call `backward()` on the nodes in the topologically-sorted order.
+
 
 
