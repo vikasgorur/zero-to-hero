@@ -102,5 +102,37 @@ Here `out` is the new value node that represents `a * b`.
 
 To compute the gradient for every node, we need to call `backward()` on the nodes in the topologically-sorted order.
 
+### A bug
+
+The backpropagation code above has a bug. If any node is used more than once in the value graph, the gradient gets overwritten on each invocation. To fix this, we need to *accumulate* the gradient every time it is back-propagated, instead of simply setting it.
+
+### Other operations
+
+For convenience, we also define versions of `+` and `*` that can operate with one of the operands being a constant. We also define a few more operations: `exp` and a generalized `^` that works on integer, float and negative exponents. This also gives us division, which is just `x^-1`.
+
+**Important**: The individual nodes in the graph can be as complex as we want. As long as the forward pass and the backward pass both work, it can be anything at all, like a “composite” operation like `tanh` or something even more complicated.
+
+### PyTorch
+
+The same graph and backpropagation can be done using the PyTorch API. The difference is that PyTorch operates on tensors, which are n-dimensional arrays with a rank and shape.
+
+## Neural Net
+
+Now we can build a neural network library on top of micrograd, closely following the PyTorch library.
+
+A  `Neuron` has  `n`in inputs and one output: $tanh(w \cdot x + b)$.
+
+A  `Layer` has `ni`n inputs that are fed to each of `n_out` neurons.
+
+A  `MLP` has many layers. Each layer is fully connected to the next layer.
+
+### Loss
+
+The loss is a function of: (1) the vector of expected outputs (2) the vector of predicted outputs
+
+The gradient of any parameter in the neural net with respect to the loss is a sum of terms. Each term corresponds to one training example.
+
+
+
 
 
